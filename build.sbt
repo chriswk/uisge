@@ -11,6 +11,7 @@ libraryDependencies ++= Seq(
   anorm,
   cache,
   ws,
+  "com.wordnik" %% "swagger-play2" % "1.3.12" exclude ("org.reflections", "reflections"),
   "org.postgresql" % "postgresql" % "9.4-1201-jdbc41",
   "net.logstash.logback" % "logstash-logback-encoder" % "4.2",
   "nl.grons" %% "metrics-scala" % "3.3.0_a2.3",

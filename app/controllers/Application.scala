@@ -1,6 +1,6 @@
 package controllers
 
-import model.{Whiskies, Distilleries}
+import models.{Distilleries, Whiskies}
 import play.api._
 import play.api.mvc._
 
