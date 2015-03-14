@@ -3,18 +3,26 @@
 # ~~~~
 
 # Home page
-GET         /                              controllers.Application.index
+GET           /                                  controllers.Application.index
 
 #Whiskies
-GET         /whiskies                      controllers.WhiskeyApi.list
-PUT         /whiskies                     controllers.WhiskeyApi.updateWhiskey
-POST        /whiskies                      controllers.WhiskeyApi.addWhiskey
-GET         /whiskies/:id                  controllers.WhiskeyApi.getWhiskeyById(id: Long)
+GET           /whiskies                          controllers.WhiskeyApi.list
+PUT           /whiskies                          controllers.WhiskeyApi.updateWhiskey
+POST          /whiskies                          controllers.WhiskeyApi.addWhiskey
+GET           /whiskies/:id                      controllers.WhiskeyApi.getWhiskeyById(id: Long)
+DELETE        /whiskies/:id                      controllers.WhiskeyApi.deleteWhiskey(id: Long)
 
+#Distilleries
+GET           /distilleries                      controllers.DistilleryApi.list
+PUT           /distilleries                      controllers.DistilleryApi.updateDistillery
+POST          /distilleries                      controllers.DistilleryApi.addDistillery
+GET           /distilleries/:id                  controllers.DistilleryApi.getDistilleryById(id: Long)
+DELETE        /distilleries/:id                  controllers.DistilleryApi.deleteDistillery(id: Long)
 #Swagger
-GET         /api-docs.json                 controllers.ApiHelpController.getResources()
-GET         /api-docs.json/whiskies        controllers.ApiHelpController.getResource(path = "/whiskies")
-GET         /swagger                       controllers.Swagger.swagger
+GET           /api-docs.json                     controllers.ApiHelpController.getResources()
+GET           /api-docs.json/whiskies            controllers.ApiHelpController.getResource(path = "/whiskies")
+GET           /api-docs.json/distilleries        controllers.ApiHelpController.getResource(path = "/distilleries")
+GET           /swagger                           controllers.Swagger.swagger
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file                  controllers.Assets.at(path="/public", file)
+GET           /assets/*file                      controllers.Assets.at(path="/public", file)

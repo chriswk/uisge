@@ -5,8 +5,9 @@ import javax.ws.rs.PathParam
 
 import com.wordnik.swagger.annotations._
 import com.wordnik.swagger.core.util.ScalaJsonUtil
-import model.Whiskey
-import model.Whiskey._
+import model.WhiskeyDB
+import model.WhiskeyDB._
+import models.Whiskey
 import play.api.data.Form
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
@@ -22,7 +23,7 @@ object WhiskeyApi extends Controller {
     responseContainer = "List"
   )
   def list = Action {
-    val data = Json.toJson(Whiskey.list)
+    val data = Json.toJson(WhiskeyDB.list)
     Ok(data)
   }
   
@@ -37,7 +38,7 @@ object WhiskeyApi extends Controller {
     new ApiResponse(code = 404, message="Whiskey not found")
   ))
   def getWhiskeyById(@ApiParam(value = "ID of the whiskey to fetch") @PathParam("id") id: Long) = Action {
-    Whiskey.get(id) match {
+    WhiskeyDB.get(id) match {
       case Some(whiskey) => Ok(Json.toJson(whiskey))
       case None => NotFound
     }
@@ -59,7 +60,7 @@ object WhiskeyApi extends Controller {
     implicit request => 
       val jsonBody: JsValue = request.body
       val whiskey: Whiskey = jsonBody.as[Whiskey]
-      Whiskey.save(whiskey)
+      WhiskeyDB.save(whiskey)
       Created
   }
   
@@ -79,7 +80,21 @@ object WhiskeyApi extends Controller {
   ))
   def updateWhiskey() = Action(parse.json) {
     implicit request =>
-      Whiskey.save(request.body.as[Whiskey])
+      WhiskeyDB.update(request.body.as[Whiskey])
       Accepted
   }
+
+  @ApiOperation(nickname = "deleteWhiskey",
+    value="Remove an existing Whiskey",
+    response = classOf[Void],
+    httpMethod = "DELETE")
+  @ApiResponses(Array(
+    new ApiResponse(code = 400, message = "Invalid ID supplied"),
+    new ApiResponse(code = 404, message = "Whiskey not found")
+  ))
+  def deleteWhiskey(@ApiParam(value = "ID of the whiskey to delete") @PathParam("id") id: Long) = Action {
+    WhiskeyDB.delete(id)
+    Ok
+  }
+  
 }
