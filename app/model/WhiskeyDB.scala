@@ -13,7 +13,6 @@ import play.api.libs.functional.syntax._
 
 object WhiskeyDB {
   val whiskies = TableQuery[Whiskies]
-  implicit val whiskeyFormat = Json.format[Whiskey]
   def list: List[Whiskey] = DB.withSession { implicit session: Session =>
     whiskies.list
   }

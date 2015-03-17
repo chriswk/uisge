@@ -4,16 +4,25 @@ package controllers
 import javax.ws.rs.PathParam
 
 import com.wordnik.swagger.annotations._
-import com.wordnik.swagger.core.util.ScalaJsonUtil
 import model.WhiskeyDB
-import model.WhiskeyDB._
 import models.Whiskey
-import play.api.data.Form
-import play.api.libs.json.{JsValue, Json}
+import play.api.data._
+import play.api.data.Forms._
 import play.api.mvc._
+import play.api.libs.json._
+import play.api.libs.functional.syntax._
 
 @Api(value = "/whiskies", description = "Operations on whiskies")
 object WhiskeyApi extends Controller {
+  implicit val whiskeyFormat = Json.format[Whiskey]
+  val whiskeyForm = Form(
+    mapping (
+      "id" -> default(longNumber, -1L),
+      "name" -> nonEmptyText,
+      "age" -> number(min = 3),
+      "distillery_id" -> longNumber
+    )(Whiskey.apply)(Whiskey.unapply)
+  )
 
   @ApiOperation(
     nickname = "listWhiskies",
@@ -57,11 +66,16 @@ object WhiskeyApi extends Controller {
     new ApiImplicitParam(value = "Whiskey object to be added", required=true, dataType = "Whiskey", paramType = "body"))
   )
   def addWhiskey() = Action(parse.json) {
-    implicit request => 
-      val jsonBody: JsValue = request.body
-      val whiskey: Whiskey = jsonBody.as[Whiskey]
-      WhiskeyDB.save(whiskey)
-      Created
+    implicit request =>
+      whiskeyForm.bindFromRequest.fold(
+        formWithErrors => {
+          BadRequest(Json.toJson(formWithErrors))
+        },
+        whiskey => {
+          WhiskeyDB.save(whiskey)
+          Created
+        }
+      )
   }
   
   @ApiOperation(
@@ -80,8 +94,15 @@ object WhiskeyApi extends Controller {
   ))
   def updateWhiskey() = Action(parse.json) {
     implicit request =>
-      WhiskeyDB.update(request.body.as[Whiskey])
-      Accepted
+      whiskeyForm.bindFromRequest.fold(
+        formWithErrors => {
+          BadRequest(Json.toJson(formWithErrors))
+        },
+        whiskey => {
+          WhiskeyDB.update(whiskey)
+          Accepted
+        }
+      )
   }
 
   @ApiOperation(nickname = "deleteWhiskey",

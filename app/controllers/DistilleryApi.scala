@@ -3,15 +3,27 @@ package controllers
 import javax.ws.rs.PathParam
 
 import com.wordnik.swagger.annotations._
-import controllers.WhiskeyApi._
 import model.DistilleryDB
-import model.DistilleryDB._
 import models.Distillery
-import play.api.libs.json.{JsValue, Json}
+import play.api.data._
+import play.api.data.Forms._
 import play.api.mvc.{Action, Controller}
+import play.api.libs.json._
+import play.api.libs.functional.syntax._
 
 @Api(value = "/distilleries", description = "Operations on distilleries")
 object DistilleryApi extends Controller {
+  implicit val distilleryWrites = Json.writes[Distillery]
+  implicit val distilleryReads = Json.reads[Distillery]
+
+  val distilleryForm = Form(
+    mapping(
+      "id" -> default(longNumber, -1L),
+      "name" -> nonEmptyText,
+      "age" -> number(min = 1)
+    )(Distillery.apply)(Distillery.unapply)
+  )
+
   @ApiOperation(
     nickname = "listDistilleries",
     value = "List all Distilleries",
@@ -55,10 +67,15 @@ object DistilleryApi extends Controller {
   )
   def addDistillery() = Action(parse.json) {
     implicit request =>
-      val jsonBody: JsValue = request.body
-      val distillery: Distillery = jsonBody.as[Distillery]
-      DistilleryDB.save(distillery)
-      Created
+      distilleryForm.bindFromRequest.fold(
+        formWithErrors => {
+          BadRequest(Json.toJson(formWithErrors))
+        },
+        distillery => {
+          DistilleryDB.save(distillery)
+          Created
+        }
+      )
   }
 
   @ApiOperation(
@@ -77,8 +94,15 @@ object DistilleryApi extends Controller {
   ))
   def updateDistillery() = Action(parse.json) {
     implicit request =>
-      DistilleryDB.update(request.body.as[Distillery])
-      Accepted
+      distilleryForm.bindFromRequest.fold(
+        formWithErrors => {
+          BadRequest(Json.toJson(formWithErrors))
+        },
+        distillery => {
+          DistilleryDB.update(distillery)
+          Accepted
+        }
+      )
   }
   @ApiOperation(nickname = "deleteDistillery",
   value="Remove an existing Distillery",
