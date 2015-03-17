@@ -1,7 +1,6 @@
 package models
 
 import play.api.db.slick.Config.driver.simple._
-
 case class Distillery(id: Long, name: String, established: Int)
 
 class Distilleries(tag: Tag) extends Table[Distillery](tag, "DISTILLERY") {

@@ -1,18 +1,18 @@
 package model
 
 import models.{Whiskey, Whiskies}
-
-import scala.slick.lifted.TableQuery
 import play.api.Play.current
 import play.api.db.slick.Config.driver.simple._
 import play.api.db.slick.DB
 import play.api.libs.json._
-import play.api.libs.functional.syntax._
+
+import scala.slick.lifted.TableQuery
 
 
 
 object WhiskeyDB {
   val whiskies = TableQuery[Whiskies]
+  implicit val whiskeyFormat = Json.format[Whiskey]
   def list: List[Whiskey] = DB.withSession { implicit session: Session =>
     whiskies.list
   }

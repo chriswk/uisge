@@ -6,11 +6,10 @@ import javax.ws.rs.PathParam
 import com.wordnik.swagger.annotations._
 import model.WhiskeyDB
 import models.Whiskey
-import play.api.data._
 import play.api.data.Forms._
-import play.api.mvc._
+import play.api.data._
 import play.api.libs.json._
-import play.api.libs.functional.syntax._
+import play.api.mvc._
 
 @Api(value = "/whiskies", description = "Operations on whiskies")
 object WhiskeyApi extends Controller {
@@ -69,7 +68,7 @@ object WhiskeyApi extends Controller {
     implicit request =>
       whiskeyForm.bindFromRequest.fold(
         formWithErrors => {
-          BadRequest(Json.toJson(formWithErrors))
+          BadRequest(formWithErrors.errorsAsJson)
         },
         whiskey => {
           WhiskeyDB.save(whiskey)
@@ -85,9 +84,8 @@ object WhiskeyApi extends Controller {
     httpMethod = "PUT"
   )
   @ApiResponses(Array(
-    new ApiResponse(code = 400, message = "Invalid ID supplied"),
-    new ApiResponse(code = 404, message = "Whiskey not found"),
-    new ApiResponse(code = 405, message = "Validation exception")
+    new ApiResponse(code = 400, message = "Invalid data"),
+    new ApiResponse(code = 404, message = "Whiskey not found")
   ))
   @ApiImplicitParams(Array(
     new ApiImplicitParam(value = "Whiskey to be updated in the store", required = true, dataType = "Whiskey", paramType = "body")
@@ -96,11 +94,16 @@ object WhiskeyApi extends Controller {
     implicit request =>
       whiskeyForm.bindFromRequest.fold(
         formWithErrors => {
-          BadRequest(Json.toJson(formWithErrors))
+          BadRequest(formWithErrors.errorsAsJson)
         },
         whiskey => {
-          WhiskeyDB.update(whiskey)
-          Accepted
+          WhiskeyDB.get(whiskey.id) match {
+            case Some(w) => {
+              WhiskeyDB.update(whiskey)
+              Accepted
+            }
+            case None => NotFound
+          }
         }
       )
   }

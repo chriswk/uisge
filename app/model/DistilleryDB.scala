@@ -1,17 +1,16 @@
 package model
 
-import models.{Distillery, Distilleries}
-
-import scala.slick.lifted.TableQuery
+import models.{Distilleries, Distillery}
 import play.api.Play.current
 import play.api.db.slick.Config.driver.simple._
 import play.api.db.slick.DB
 import play.api.libs.json._
-import play.api.libs.functional.syntax._
+
+import scala.slick.lifted.TableQuery
 
 
 object DistilleryDB {
-
+  implicit val distilleryFormat = Json.format[Distillery]
   val distilleries = TableQuery[Distilleries]
 
   def list() : List[Distillery] = DB.withSession { implicit session: Session =>

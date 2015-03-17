@@ -4,17 +4,15 @@ import javax.ws.rs.PathParam
 
 import com.wordnik.swagger.annotations._
 import model.DistilleryDB
+import model.DistilleryDB._
 import models.Distillery
-import play.api.data._
 import play.api.data.Forms._
-import play.api.mvc.{Action, Controller}
+import play.api.data._
 import play.api.libs.json._
-import play.api.libs.functional.syntax._
+import play.api.mvc.{Action, Controller}
 
 @Api(value = "/distilleries", description = "Operations on distilleries")
 object DistilleryApi extends Controller {
-  implicit val distilleryWrites = Json.writes[Distillery]
-  implicit val distilleryReads = Json.reads[Distillery]
 
   val distilleryForm = Form(
     mapping(
@@ -69,7 +67,7 @@ object DistilleryApi extends Controller {
     implicit request =>
       distilleryForm.bindFromRequest.fold(
         formWithErrors => {
-          BadRequest(Json.toJson(formWithErrors))
+          BadRequest(formWithErrors.errorsAsJson)
         },
         distillery => {
           DistilleryDB.save(distillery)
@@ -85,9 +83,8 @@ object DistilleryApi extends Controller {
     httpMethod = "PUT"
   )
   @ApiResponses(Array(
-    new ApiResponse(code = 400, message = "Invalid ID supplied"),
-    new ApiResponse(code = 404, message = "Distillery not found"),
-    new ApiResponse(code = 405, message = "Validation exception")
+    new ApiResponse(code = 400, message = "Invalid Data"),
+    new ApiResponse(code = 404, message = "Distillery not found")
   ))
   @ApiImplicitParams(Array(
     new ApiImplicitParam(value = "Distillery to be updated in the store", required = true, dataType = "Distillery", paramType = "body")
@@ -96,11 +93,16 @@ object DistilleryApi extends Controller {
     implicit request =>
       distilleryForm.bindFromRequest.fold(
         formWithErrors => {
-          BadRequest(Json.toJson(formWithErrors))
+          BadRequest(formWithErrors.errorsAsJson)
         },
         distillery => {
-          DistilleryDB.update(distillery)
-          Accepted
+          DistilleryDB.get(distillery.id) match {
+            case Some(_) => {
+              DistilleryDB.update(distillery)
+              Accepted
+            }
+            case None => NotFound
+          }
         }
       )
   }
