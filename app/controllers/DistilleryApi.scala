@@ -18,7 +18,7 @@ object DistilleryApi extends Controller {
     mapping(
       "id" -> default(longNumber, -1L),
       "name" -> nonEmptyText,
-      "age" -> number(min = 1)
+      "established" -> number(min = 1)
     )(Distillery.apply)(Distillery.unapply)
   )
 
