@@ -58,7 +58,7 @@ object DistilleryApi extends Controller {
     httpMethod = "POST"
   )
   @ApiResponses(Array(
-    new ApiResponse(code = 405, message = "Invalid input")
+    new ApiResponse(code = 400, message = "Invalid input")
   ))
   @ApiImplicitParams(Array(
     new ApiImplicitParam(value = "Distillery object to be added", required=true, dataType = "Distillery", paramType = "body"))
