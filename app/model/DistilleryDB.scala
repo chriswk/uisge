@@ -1,5 +1,6 @@
 package model
 
+import com.kenshoo.play.metrics.MetricsRegistry
 import models.{Distilleries, Distillery}
 import play.api.Play.current
 import play.api.db.slick.Config.driver.simple._
@@ -11,6 +12,7 @@ import scala.slick.lifted.TableQuery
 
 object DistilleryDB {
   implicit val distilleryFormat = Json.format[Distillery]
+  val distilleryCounter = MetricsRegistry.defaultRegistry.counter("distillery")
   val distilleries = TableQuery[Distilleries]
 
   def list() : List[Distillery] = DB.withSession { implicit session: Session =>
@@ -22,6 +24,7 @@ object DistilleryDB {
   }
 
   def save(d: Distillery) = DB.withSession { implicit session: Session =>
+    distilleryCounter.inc
     distilleries.map(dist => (dist.name, dist.established)) += (d.name, d.established)
   }
 
@@ -30,6 +33,7 @@ object DistilleryDB {
   }
 
   def delete(id: Long) = DB.withSession { implicit session: Session =>
+    distilleryCounter.dec
     distilleries.filter(_.id === id).delete
   }
 

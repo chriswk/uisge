@@ -16,5 +16,6 @@ libraryDependencies ++= Seq(
   "net.logstash.logback" % "logstash-logback-encoder" % "4.2",
   "nl.grons" %% "metrics-scala" % "3.3.0_a2.3",
   "com.sksamuel.elastic4s" %% "elastic4s" % "1.4.13",
-  "com.typesafe.play" %% "play-slick" % "0.8.1"
+  "com.typesafe.play" %% "play-slick" % "0.8.1",
+  "com.kenshoo" %% "metrics-play" % "2.3.0_0.1.8"
 )
