@@ -26,3 +26,6 @@ GET           /swagger                           controllers.Swagger.swagger
 
 # Map static resources from the /public folder to the /assets URL path
 GET           /assets/*file                      controllers.Assets.at(path="/public", file)
+
+#Metrics
+GET     /admin/metrics              com.kenshoo.play.metrics.MetricsController.metrics

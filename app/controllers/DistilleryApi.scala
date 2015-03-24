@@ -68,12 +68,10 @@ object DistilleryApi extends Controller {
   @ApiImplicitParams(Array(
     new ApiImplicitParam(value = "Distillery object to be added", required=true, dataType = "Distillery", paramType = "body"))
   )
-  def addDistillery() = Action(parse.json) {
+  def addDistillery() = Action {
     implicit request =>
       distilleryForm.bindFromRequest.fold(
-        formWithErrors => {
-          BadRequest(formWithErrors.errorsAsJson)
-        },
+        formWithErrors => BadRequest(formWithErrors.errorsAsJson),
         distillery => {
           DistilleryDB.save(distillery)
           Created
