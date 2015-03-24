@@ -18,7 +18,11 @@ object WhiskeyApi extends Controller {
     mapping (
       "id" -> default(longNumber, -1L),
       "name" -> nonEmptyText,
-      "age" -> number(min = 3),
+      "vintage" -> optional(number),
+      "bottled" -> optional(number),
+      "abv" -> optional(bigDecimal(5, 2)),
+      "cask_nr" -> optional(text),
+      "size" -> optional(number),
       "distillery_id" -> longNumber
     )(Whiskey.apply)(Whiskey.unapply)
   )

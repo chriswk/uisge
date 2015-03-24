@@ -22,7 +22,7 @@ object WhiskeyDB {
   }
   
   def save(w: Whiskey) = DB.withSession { implicit session: Session =>
-    whiskies.map(w => (w.name, w.age, w.distillery_id)) += (w.name, w.age, w.distillery_id)
+    whiskies += w
   }
   
   def update(w: Whiskey) = DB.withSession { implicit session: Session =>
